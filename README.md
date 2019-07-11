@@ -1,0 +1,358 @@
+correr server local para pasar archivos:
+
+ python3 -m http.server 8000 --bind 10.0.0.5
+
+```
+ yarn expo init platziVideoApp
+ cd platziVideoApp
+ yarn start
+ yarn expo start
+```
+usar el linter de Babel.js en SublimeText
+instalar el adb desde apt
+instalar desde yarn expo por que usando el create-expoproject del libro usa una version antigua que el cliente de android no reconoce
+usar lo siguiente para el path de android
+https://medium.com/@khairold/setting-up-react-native-on-linux-without-android-studio-a65f3e011bbb
+
+## Componentes
+
+#### Imagenes
+el background se ahce con un componente, no con una imagen y CSS
+absoluta `<image source={{uri}}/>`
+relativa `<image source={require('path')}/>`
+```jsx
+<Image 
+	source={require('./assets/logo.png')} 
+	style={{width:300, height:80}}
+/>
+
+```
+#### Platform
+Nos permite elegir codigo segun la plataforma:
+```jsx
+const instructions = Platform.select({
+  ios: 'Press Cmd+R to reload,\n' +'asdasd',
+  android: 'shitty instructions',
+});
+
+export default class App extends React.Component<Props>
+```
+
+#### Styles
+usa Flex(?) alreves por su orden
+parecido a displayblock(?)
+
+```jsx
+cosnt instructions='asd'
+...
+<Text style={styles.instructions}>
+  {instructions}
+</Text>
+...    
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Platform.select({
+      ios: 'blue',
+      android: '#ff1',
+    }),
+  },
+  welcome: {
+    fontSize: 20,
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#3333FF',
+    marginBottom: 5,
+  },
+});
+```
+### Containers
+
+poseen componentes y ciclos de vida,los componentes(dumb components)solo tienen UI
+
+## Proyecto
+
+creamos esta estructura de carpetas dentro del proyecto
+```
+tree  -L 3 -I node_modules --noreport
+
+├── App.js
+├── app.json
+├── assets
+│   └── *.png
+├── babel.config.js
+├── index.js
+├── package.json
+├── README.md
+├── src
+│   ├── player
+│   │   ├── components
+│   │   └── containers
+│   ├── screens
+│   │   ├── components
+│   │   └── containers
+│   ├── sections
+│   │   ├── components
+│   │   └── containers
+│   └── videos
+│       ├── components
+│       └── containers
+└── yarn.lock
+
+```
+
+en `src/screens/containers` creamos un `home.js`:
+```jsx
+import React, {Component} from 'react';
+
+class Home extends Component{
+	render(){
+		// esto regresa los hijos del componente
+		return this.props.children
+	}
+}
+
+export default Home;
+```
+con esto solo creamos React(no usamos anda del native) ni hemos creado UI
+
+En el `App.js`:
+```jsx
+import React, { Component } from 'react';
+import {
+  Text,
+} from 'react-native';
+
+import Home from './src/screens/containers/home';
+import Header from './src/sections/components/header';
+type Props = {};
+export default class App extends React.Component<Props> {
+  render() {
+    return (
+      <Home>
+      <Header>
+        <Text>asdasdasdas</Text>
+      </Header>
+        <Text>header</Text>
+        <Text>buscador</Text>
+        <Text>categorías</Text>
+        <Text>sugerencias</Text>
+      </Home>
+    );
+  }
+}
+```
+creamos un componente sencillo para herencia como ejemplo en `src/screens/containers/home.js`
+```jsx
+import React, {Component} from 'react';
+
+class Home extends Component{
+	render(){
+		// esto regresa los hijos del componente
+		return this.props.children
+	}
+}
+
+export default Home;
+
+```
+### Header
+creamos un componente en `src/sections/components/header.js`
+```jsx
+import React from 'react';
+import {View,Text,Image,StyleSheet,SafeAreaView,} from 'react-native'
+
+function Header(props){
+  return (
+    <View>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <Image
+            source={require('../../../assets/logo.png')}
+            style={styles.logo}
+          />
+          <View style={styles.right}>
+            {props.children}
+            //esto le permite heredar al componente si hay algun comp. interno
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
+		)
+}
+const styles=StyleSheet.create({
+	logo:{
+		width: 80,
+		height: 26,
+		resizeMode: 'contain',
+		//lo muestra con el espacio disponible
+		//por defecto esta en content
+	},
+	container:{
+		//en normal el padding va como reloj desde el 12
+		//en produccion usas el padding individual
+		paddingVertical: 10,
+		paddingHorizontal: 10,
+		flexDirection: 'row' ,
+		backgroundColor: '#539FDB',
+	},
+	right:{
+		//al aprecer indica las direcciones
+		//este le dice que ocupe mas espacio
+		flex: 1,//aqui esta en column
+		flexDirection: 'row' ,//aqui lo convierte a fila
+		justifyContent: 'flex-end' ,//esto lo justifica al final del elemento
+		backgroundColor: '#BBC7FF',
+	}
+})
+export default Header;
+```
+
+### listas
+
+creamos un nuevo componente:`src/sections/components/sugestion_list.js`, aqui haremos la mayoria de las operaciones de despliegue de info,se va modificando mientras se agregan los componentes pero aqui solo anotare los cambios al agregar los componentes a considerar
+
+```jsx
+import React,{Component} from 'react';
+import {
+  FlatList,Text,
+} from 'react-native';
+
+class SuggestionList extends Component{
+  render(){
+    const list=[
+      {title:'uno',key:'1'},
+      {title:'dos',key:'2'}
+    ]
+    return(
+      <FlatList data={list}
+      //lee los elementos de item y despliega su info
+      renderItem={({item})=><Text>{item.title}</Text> }/>
+      )
+  }
+}
+
+export default SuggestionList
+```
+e importamos ambos en el `app.js`:
+
+``` jsx
+import ...
+
+import Home from './src/screens/containers/home';
+import Header from './src/sections/components/header';
+import Sugestion_list from './src/screens/containers/sugestion_list';
+...
+    return (
+      <Home>
+      <Header>
+        <Text>asdasdasdas</Text>
+      </Header>
+       ...
+        <Sugestion_list/>
+...
+```
+
+ahora que ya los importamos creamos el componente `src/sections/components/sugestion_list_layout.js`
+
+```jsx
+import React from 'react';
+import {
+  View,Text,StyleSheet
+} from 'react-native';
+
+function SuggestionListLayout(props){
+  return(
+    //aqui hereda las propiedades a sus hijos y sus css
+    <View style={styles.container}>
+    <Text  style={styles.title}> {props.title}</Text>
+    {props.children}
+    </View>
+
+    )
+}
+const styles=StyleSheet.create({
+  container:{
+    paddingVertical:10,
+    flex:1,
+  },
+  title:{
+    color:'#4c4c4c',
+    fontSize:20,
+    marginBottom:10,
+    fontWeight:'bold',
+    marginLeft:8,
+  }
+})
+//aqui lo exportamos
+export default SuggestionListLayout
+``` 
+
+creamos el componente `src/sections/components/empty.js`
+
+```
+ import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet
+} from 'react-native'
+
+function Empty(props){
+  return(
+    <View style={styles.container}>
+    <Text style={styles.text}>{props.text}</Text>
+    </View>
+    )
+}
+const styles=StyleSheet.create({
+container:{
+  padding: 10,
+},
+text: {
+fontSize: 20,
+}
+})
+
+export default Empty
+```
+
+
+creamos el componente `src/sections/components/vertical_separator.js`
+
+```
+import React from 'react';
+import{
+  View,
+  Text,StyleSheet
+} from 'react-native';
+
+function VerticalSeparator(props){
+  return(
+    <View style={[styles.separator,
+    {//crea opciones de colores
+      borderTopColor: (props.color)?props.color:'#eaeaea',
+    }
+      ]}>
+    <Text>esto es un separador</Text>
+    </View>
+    )
+
+}
+const styles=StyleSheet.create(
+  {
+  separator:{
+    //linea de separador
+    borderTopWidth: 1,
+  }
+  }
+)
+export default VerticalSeparator
+```
+
+
+falta agregar el sugestions llamando estos componentes
