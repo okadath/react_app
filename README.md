@@ -429,7 +429,111 @@ fontSize: 11,
 })
 export default Suggestion
 ```
+### API
 
 usaremos la api de https://yts.lt/api
 
+creamos una carpeta con un archivo: `utils/api.js`:
+```js
+const BASE_API = 'https://yts.am/api/v2/';
+
+class API {
+  async getSuggestion(id) {
+    const query = await fetch(`${BASE_API}movie_suggestions.json?movie_id=${id}`);
+    const { data } = await query.json();
+    return data.movies
+  }
+}
+//asi creamos y exportamos e instanciamos una clase
+export default new API();
+
+```
+y la llamamos desde el app.js:
+```jsx
+import React, { Component } from 'react';
+import {
+  Text,
+} from 'react-native';
+
+import Home from './src/screens/containers/home';
+import Header from './src/sections/components/header';
+import SuggestionList from './src/videos/components/sugestion_list';
+
+import API from './utils/api';
+
+type Props = {};
+export default class App extends Component<Props> {
+  state = {
+    suggestion_List: []
+  }
+  async componentDidMount() {
+    const movies = await API.getSuggestion(10);
+    console.log(movies);
+    this.setState({
+      suggestion_List: movies,
+    })
+  }
+  render() {
+    return (
+      <Home>
+        <Header />
+        <Text>buscador</Text>
+        <Text>categorías</Text>
+        <SuggestionList
+          list={this.state.suggestion_List}
+        />
+      </Home>
+    );
+  }
+}
+```
+y para que no haya rerender editamos el `sugestion_list.js`:
+
+```jsx
+class SuggestionList extends Component{
+...
+  //solo ayuda a no rerenderizar
+  keyExtractor=(item)=>item.id.toString()
+  render(){
+    //const list=[
+      //{title:'titulo1',key:'1'},
+      //{title:'titulo 2',key:'2'}
+    //]
+    return(
+      <Layout title='Sugerencias para ti'>
+      <FlatList 
+      keyExtractor={this.keyExtractor}
+      data={this.props.list}
+      //ListEmptyComponent={()=><Text>No hay elementos</Text>}
+      ListEmptyComponent={this.renderEmpty}
+      ItemSeparatorComponent={this.itemSeparator}
+      //renderItem={({item})=><Text>{item.title}</Text> }/>
+      renderItem={this.renderItem} />
+...
+```
+para desplegarlo editamos el `suggeston.js`:
+```jsx
+function Suggestion(props){
+  return (
+    <View style={styles.container}>
+      <View style={styles.left}>
+        <Image style={styles.cover}
+        source={{uri:props.medium_cover_image}} />
+        <View style={styles.genre} >
+          <Text style={styles.genreText} >{props.genres[0]}</Text>
+        </View>
+      </View>
+
+      <View style={styles.right}>
+        <Text style={styles.rigth}>{props.title}</Text>
+        <Text style={styles.year}>{props.year}</Text>
+        <Text style={styles.rating}>{props.rating}</Text>
+      </View>
+    </View>
+
+    )
+}
+```
+
+### Lista de Categorias
 
