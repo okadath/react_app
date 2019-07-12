@@ -6,6 +6,11 @@ class API {
     const { data } = await query.json();
     return data.movies
   }
+  async getMovies() {
+    const query = await fetch(`${BASE_API}list_movies.json?`);
+    const { data } = await query.json();
+    return data.movies
+  }
 }
 //asi creamos y exportamos e instanciamos una clase
 export default new API();

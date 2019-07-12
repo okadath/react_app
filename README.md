@@ -537,3 +537,136 @@ function Suggestion(props){
 
 ### Lista de Categorias
 
+creamos un layout `src/videos/components/category_list_layout.js`:
+```jsx
+import React from 'react';
+import {
+  View,Text,StyleSheet,ImageBackground,
+} from 'react-native';
+
+function CategoryListLayout(props){
+  return(
+    <ImageBackground source={require('../../../assets/background.png')}
+    style={styles.container}>
+      <Text  style={styles.title}> {props.title}</Text>
+      {props.children}
+    </ImageBackground>
+    )
+}
+const styles=StyleSheet.create({
+  container:{
+    paddingVertical:30,
+    paddingHorizontal: 10,
+    flex:1,
+    backgroundColor: '#F4F9F1',
+  },
+  title:{
+    color:'#4c4c4c',
+    fontSize:20,
+    marginBottom:10,
+    fontWeight:'bold',
+  }
+})
+
+export default CategoryListLayout
+```
+y creamos su separador en `sections/sections/components/horizontal_separator.js`:
+```jsx
+import React from 'react';
+import{
+  View,
+  Text,StyleSheet
+} from 'react-native';
+
+function HorizontalSeparator(props){
+  return(
+    <View style={[styles.separator,
+    {
+      borderTopColor: (props.color)?props.color:'#4C3F3F',
+    }
+      ]}>
+    </View>
+    )
+
+}
+const styles=StyleSheet.create(
+  {
+  separator:{
+    flex:1,
+    marginHorizontal: 5,
+    borderLeftWidth: 1,
+  }
+  }
+)
+export default HorizontalSeparator
+```
+creamos un container para las categorias en `src/videos/containers/category_list.js`
+```jsx
+import React, { Component } from 'react';
+import {
+  View,
+  FlatList
+} from 'react-native';
+import Layout from '../components/category_list_layout';
+import Empty from '../components/empty';
+import Separator from '../../sections/components/horizontal_separator';
+import Suggestion from '../components/suggestion';
+
+class CategoryList extends Component {
+  keyExtractor = item => item.id.toString()
+  renderEmpty = () => <Empty text="No hay sugerencias :(" />
+  itemSeparator = () => <Separator  color='blue'/>
+  renderItem = ({item}) => {
+    return (
+      <Suggestion {...item}/>
+    )
+  }
+  render() {
+    return (
+      <Layout title="Categorias"
+      >
+      <FlatList
+        horizontal
+        keyExtractor={this.keyExtractor}
+        data={this.props.list}
+        ListEmptyComponent={this.renderEmtpy}
+        ItemSeparatorComponent={this.itemSeparator}
+        renderItem={this.renderItem}
+      />
+      </Layout>
+    )
+  }
+}
+
+export default CategoryList;
+```
+
+y este componente lo llamaremos desde el `app.js`:
+```jsx
+...
+import CategoryList from './src/videos/containers/category_list';
+...
+export default class App extends Component<Props> {
+  state = {
+    suggestion_List: [],
+    category_List: [],
+  }
+  async componentDidMount() {
+    const movies = await API.getSuggestion(5);
+    const categories = await API.getMovies();
+    this.setState({
+      suggestion_List: movies,
+      category_List:categories,
+    })
+  }
+  render() {
+...
+        <CategoryList
+          list={this.state.category_List}
+        />
+        <SuggestionList
+          list={this.state.suggestion_List}
+        />
+...
+```
+

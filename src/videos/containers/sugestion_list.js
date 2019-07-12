@@ -4,12 +4,12 @@ import {
 } from 'react-native';
 import Layout from '../components/sugestion_list_layout';
 import Empty from '../components/empty';
-import Separator from '../components/vertical_separator';
+import Separator from '../../sections/components/vertical_separator';
 import Suggestion from '../components/suggestion';
 
 class SuggestionList extends Component{
 	renderEmpty=()=><Empty text="No hay sugerencias :/" />
-	itemSeparator=()=><Separator color='red' text="No hay sugerencias :/"/>
+	itemSeparator=()=><Separator color='#65E78D' text="No hay sugerencias :/"/>
 	renderItem=({item})=>{
 		return(
 		// aqui le pasa las propiedades, spread operator
