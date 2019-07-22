@@ -670,3 +670,68 @@ export default class App extends Component<Props> {
 ...
 ```
 
+
+falta aun agregarle un componente con categorias, el cual crearemos en `src/videos/components/category.js`:
+
+```
+import React from 'react';
+import {
+  View,Text,ImageBackground,StyleSheet
+} from 'react-native';
+
+function Category(props){
+  return (
+    <ImageBackground style={styles.wrapper}
+     source={{uri:props.background_image}} >
+    <View>
+    <Text style={styles.genre}>{props.genres[0]}</Text>
+    </View>
+    </ImageBackground>
+    )
+}
+const styles=StyleSheet.create({
+wrapper:{
+width: 250,
+height: 100,
+borderRadius: 10,
+//para que se vean bien los bordes
+overflow: 'hidden',
+alignItems: 'center',
+justifyContent:  'center',
+alignItems:'center'
+
+},
+genre:{
+  color: 'white',
+  fontSize: 40,
+  fontWeight: 'bold' ,
+  //
+  textShadowColor:'rgba(0,0,0,0.75)',
+  //mover la sombra
+  textShadowOffset: {
+    width: 2,
+    height: 2
+  },
+  textShadowRadius:10 ,
+},
+})
+
+export default Category;
+```
+y lo agregamos al `category_list.js`:
+```jsx
+} from 'react-native';
+...
+import Category from '../components/category';
+
+class CategoryList extends Component {
+...
+  renderItem = ({item}) => {
+    return (
+      <Category {...item}/>
+    )
+  }
+```
+
+
+
