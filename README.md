@@ -734,4 +734,138 @@ class CategoryList extends Component {
 ```
 
 
+### Componentes independientes
+
+instalar componentes desde npm, si hay mala suerte se debe hacer desde el IDE
+https://github.com/react-native-community/react-native-video
+
+instalamos con yarn y linkeamos
+
+```
+yarn add react-native-video
+react-native link react-native-video
+```
+ya deberiamos poder usarlo...
+
+como use expo es diferente, usaremos su sdk
+```
+yarn expo install expo-av
+```
+y agregamos en el app.js
+```
+import { Video } from 'expo-av';
+```
+
+**No esta terminado el componente ya que es independiente por Expo**
+
+creamos los componentes y lo importamos en el App.js:
+```
+
+```jsx
+import Player from './src/player/containers/player'
+
+export default class App extends Component<Props> {
+  ...
+  render() {
+    return (
+      <Home>
+        <Header />
+      <Player />
+        <Text>buscador</Text>
+        ...
+```
+y creamos los componentes en una nueva carpeta `src/player`
+
+aqui, creamos en `components/layout.js`:
+```jsx
+import React from 'react';
+import {
+  View,Text,StyleSheet
+} from 'react-native';
+
+function Layout (props){
+  return(
+    <View style={styles.container}>
+    <View style={styles.video}>
+    {props.video}
+    </View>
+    <View style={styles.overlay} >
+  {props.loader}
+    </View>
+    </View>
+    )
+}
+
+const styles=StyleSheet.create({
+container:{
+  paddingTop: '56.25%',
+},
+video:{
+  position: 'absolute' ,
+  left:0,
+  top: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'black',
+},
+overlay:{
+  position: 'absolute', 
+  left:0,
+  top: 0,
+  right: 0,
+  bottom: 0,
+  justifyContent:  'center',
+  alignItems: 'center'
+}
+})
+export default Layout;
+```
+
+y en `containers/player.js`
+```
+import React ,{Component} from 'react';
+//import { Video } from 'expo';
+import { Video } from 'expo-av';
+import {
+  StyleSheet, ActivityIndicator
+} from 'react-native';
+
+import Layout from '../components/layout';
+class Player extends Component{
+  render(){
+    return(
+      <Layout video= {
+    <Video source={{uri:"https://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4"}}
+        style={styles.video} resizeMode='contain' shouldPlay
+        />
+      } 
+      loader={
+          <ActivityIndicator color='red'/>
+        }
+      />
+    )
+  }
+}
+
+
+const styles=StyleSheet.create({
+  video:{
+    position: 'absolute' ,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    top:0,
+  }
+})
+export default Player
+```
+
+falta crear los botones de pausa y volumen, pero al ser de expo  posee propiedades diferentes, usar: 
+https://medium.com/@kalen7/build-this-simple-video-player-with-react-native-and-expo-to-tell-a-multi-part-story-part-3-48f3ce1664f6
+https://medium.com/front-end-weekly/how-to-play-video-with-react-native-and-expo-30523bfcb311
+
+
+### Redux
+
+
 

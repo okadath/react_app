@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Text,
+  Text,View,
 } from 'react-native';
 
 import Home from './src/screens/containers/home';
@@ -9,6 +9,7 @@ import SuggestionList from './src/videos/containers/sugestion_list';
 import CategoryList from './src/videos/containers/category_list';
 
 import API from './utils/api';
+import Player from './src/player/containers/player'
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -29,6 +30,7 @@ export default class App extends Component<Props> {
     return (
       <Home>
         <Header />
+      <Player />
         <Text>buscador</Text>
         <Text>Categorías</Text>
         <CategoryList
